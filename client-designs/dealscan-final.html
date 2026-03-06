@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>DealScan — Smart Car Buying App | Understand Every Dealership Offer</title>
+<meta name="description" content="DealScan helps car buyers instantly understand dealer offer sheets, financing terms, and vehicle pricing — so every car deal is confident, clear, and fair. Available on Android and iOS.">
+<meta name="keywords" content="car buying app, dealership offer scanner, auto deal analyzer, car financing calculator, vehicle purchase tool, understand car deal, smart car buying, Android iOS car app, new car buying guide, used car pricing app">
+<meta name="author" content="DealScan">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0b1f14">
+<link rel="canonical" href="https://www.dealscanapp.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.dealscanapp.com/">
+<meta property="og:title" content="DealScan — Smart Car Buying App">
+<meta property="og:description" content="Understand every number on your dealer's offer sheet instantly. DealScan brings clarity and confidence to every car purchase — for buyers and dealers alike.">
+<meta property="og:image" content="https://www.dealscanapp.com/og-image.jpg">
+<meta property="og:site_name" content="DealScan">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@dealscanapp">
+<meta name="twitter:title" content="DealScan — Smart Car Buying App">
+<meta name="twitter:description" content="Scan any dealer offer sheet and instantly understand your deal. Available on Android and iOS.">
+<meta name="twitter:image" content="https://www.dealscanapp.com/og-image.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"DealScan","description":"DealScan helps car buyers instantly understand dealer offer sheets, financing breakdowns, and vehicle pricing. Available on Android and iOS.","url":"https://www.dealscanapp.com","applicationCategory":"FinanceApplication","operatingSystem":["Android","iOS"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"2400"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does DealScan work?","acceptedAnswer":{"@type":"Answer","text":"DealScan uses your phone camera to scan a dealer offer sheet and instantly decodes pricing, financing terms, and add-ons in plain language."}},{"@type":"Question","name":"Is DealScan free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes, DealScan is free to download on both Android and iOS."}},{"@type":"Question","name":"Does DealScan work with any dealership?","acceptedAnswer":{"@type":"Answer","text":"DealScan works with standard offer sheet formats from any franchised or independent dealership across the US."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a18;--ink2:#ffffff;--paper:#1a1a18;--chrome:#6b6560;
+  --blue:#e84830;--blue-lt:#f06040;--blue-glow:rgba(232,72,48,0.1);
+  --gold:#c8a84b;--mid:#8a8580;--border:rgba(30,25,20,0.10);
+  --g:clamp(1.5rem,6vw,6rem);--r:4px;
+}
+html{scroll-behavior:smooth}
+body{background:#f7f4ee;color:#1a1a18;font-family:'Syne',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+
+/* ── CAR CURSOR ── */
+#car-cursor{position:fixed;pointer-events:none;z-index:9999;width:88px;height:36px;transform:translate(-50%,-50%);will-change:left,top;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));transition:filter .2s}
+#car-cursor.on-link{filter:drop-shadow(0 0 10px rgba(232,72,48,.7)) drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+#car-beam{position:fixed;pointer-events:none;z-index:9998;width:160px;height:28px;opacity:.5;background:linear-gradient(to right,rgba(255,240,200,.3) 0%,rgba(255,240,200,.08) 50%,transparent 100%);clip-path:polygon(0 35%,100% 0%,100% 100%,0 65%);will-change:left,top;transition:opacity .2s}
+#car-beam.on-link{opacity:.75}
+
+/* ── VIDEO HERO BACKGROUND ── */
+.hero{
+  min-height:100vh;
+  padding:0 var(--g);
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+  padding-top:7rem;
+}
+
+/* fullscreen bg video */
+.hero-video-bg{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;object-position:center 60%;
+  z-index:0;
+  opacity:0;
+  transition:opacity 1.4s ease;
+}
+.hero-video-bg.loaded{opacity:1}
+
+/* dark overlay so text stays legible */
+.hero-video-overlay{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(247,244,238,.15) 0%, rgba(247,244,238,.0) 20%, rgba(247,244,238,.0) 65%, rgba(247,244,238,.85) 100%),
+    linear-gradient(to right, rgba(247,244,238,.45) 0%, transparent 55%),
+    rgba(247,244,238,.12);
+}
+
+/* fallback tint when video hasn't loaded yet */
+.hbg{position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 70% 55% at 15% 50%,rgba(232,72,48,.05) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 85% 30%,rgba(200,168,75,.06) 0%,transparent 60%),linear-gradient(160deg,#faf7f0 0%,#f2ede3 100%)}
+.hgrid{position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(30,25,20,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(30,25,20,.06) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 90% 85% at 50% 50%,black,transparent)}
+
+.scan-beam{position:absolute;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--blue),transparent);opacity:.2;animation:scanM 4s ease-in-out infinite;z-index:2;pointer-events:none}
+@keyframes scanM{0%{top:5%;opacity:0}15%{opacity:.35}85%{opacity:.35}100%{top:95%;opacity:0}}
+
+/* ── ROAD SCENE ── */
+.road-scene{position:absolute;bottom:0;left:0;right:0;height:130px;pointer-events:none;z-index:3;overflow:hidden}
+.road-scene::before{content:'';position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,rgba(247,244,238,.6));z-index:2}
+.road{position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,#e8e2d8 0%,#ddd7cc 100%);border-top:1px solid rgba(200,192,176,.06)}
+.road::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(100,160,120,.2),transparent)}
+.road::after{content:'';position:absolute;bottom:10px;left:0;right:0;height:1px;background:rgba(200,192,176,.05)}
+.road-lines{position:absolute;bottom:24px;left:0;right:0;height:2px;background:repeating-linear-gradient(to right,rgba(100,160,120,.24) 0px,rgba(100,160,120,.24) 36px,transparent 36px,transparent 72px);animation:roadScroll .9s linear infinite}
+@keyframes roadScroll{from{background-position:0 0}to{background-position:-72px 0}}
+
+.road-car-wrap{position:absolute;bottom:14px;animation:carDrive 7s linear infinite;width:160px;height:64px}
+@keyframes carDrive{0%{left:-200px;opacity:0}4%{opacity:1}90%{opacity:1}100%{left:calc(100% + 200px);opacity:0}}
+.road-headlight{position:absolute;right:-180px;top:16px;width:190px;height:36px;background:linear-gradient(to right,rgba(255,245,200,.22) 0%,rgba(255,245,200,.06) 60%,transparent 100%);clip-path:polygon(0 30%,100% 0%,100% 100%,0 70%);animation:hlFlicker 4s ease-in-out infinite}
+@keyframes hlFlicker{0%,100%{opacity:1}48%{opacity:.95}50%{opacity:.7}52%{opacity:.95}}
+.road-headlight-low{position:absolute;right:-80px;top:22px;width:85px;height:22px;background:linear-gradient(to right,rgba(255,245,200,.35),transparent);clip-path:polygon(0 20%,100% 0%,100% 100%,0 80%)}
+.road-ground-glow{position:absolute;right:-150px;bottom:-4px;width:200px;height:14px;background:radial-gradient(ellipse 80% 60% at 40% 100%,rgba(255,245,180,.12),transparent);border-radius:50%}
+.road-tailglow{position:absolute;left:-18px;top:18px;width:20px;height:18px;background:radial-gradient(ellipse at right,rgba(232,72,48,.7),transparent 70%);border-radius:0 50% 50% 0;animation:tailPulse 1.4s ease-in-out infinite}
+@keyframes tailPulse{0%,100%{opacity:1}50%{opacity:.6}}
+.honk-wrap{position:absolute;right:-60px;top:-14px;opacity:0;animation:honkShow 7s linear infinite}
+@keyframes honkShow{0%,55%,100%{opacity:0}58%,85%{opacity:1}}
+.honk-ring{position:absolute;border:1.5px solid rgba(232,72,48,.6);border-radius:50%;transform:translate(-50%,-50%);animation:ringExpand 1.2s ease-out infinite}
+.honk-ring:nth-child(1){width:16px;height:16px;animation-delay:0s}
+.honk-ring:nth-child(2){width:16px;height:16px;animation-delay:.3s}
+.honk-ring:nth-child(3){width:16px;height:16px;animation-delay:.6s}
+@keyframes ringExpand{0%{width:10px;height:10px;opacity:.8;border-color:rgba(232,72,48,.7)}100%{width:44px;height:44px;opacity:0;border-color:rgba(232,72,48,0)}}
+.honk-text{position:absolute;top:-28px;left:50%;transform:translateX(-50%);font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.18em;color:var(--blue);white-space:nowrap;opacity:0;animation:honkText 7s linear infinite;text-shadow:0 0 10px rgba(232,72,48,.4)}
+@keyframes honkText{0%,57%,90%,100%{opacity:0;transform:translateX(-50%) translateY(4px)}62%,84%{opacity:1;transform:translateX(-50%) translateY(0)}}
+.exhaust-wrap{position:absolute;left:-8px;bottom:14px;animation:carDrive 7s linear infinite}
+.exhaust-wrap span{position:absolute;border-radius:50%;background:rgba(30,25,20,.1);animation:puff 1.4s ease-out infinite}
+.exhaust-wrap span:nth-child(1){width:6px;height:6px;animation-delay:0s}
+.exhaust-wrap span:nth-child(2){width:9px;height:9px;animation-delay:.45s}
+.exhaust-wrap span:nth-child(3){width:5px;height:5px;animation-delay:.9s}
+.exhaust-wrap span:nth-child(4){width:7px;height:7px;animation-delay:1.2s}
+@keyframes puff{0%{transform:translate(0,0) scale(1);opacity:.45}100%{transform:translate(-38px,-20px) scale(3.5);opacity:0}}
+.drive-tag{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:.6rem;color:#8a8580;letter-spacing:.22em;text-transform:uppercase;display:flex;align-items:center;gap:.55rem;white-space:nowrap;opacity:0;animation:tagFloat 7s linear infinite;text-shadow:0 0 20px rgba(232,72,48,.2)}
+.drive-tag::before{content:'';width:6px;height:6px;flex-shrink:0;background:var(--blue);border-radius:50%;box-shadow:0 0 8px var(--blue);animation:blink 1s infinite}
+.drive-tag::after{content:'';width:6px;height:6px;flex-shrink:0;background:var(--blue);border-radius:50%;box-shadow:0 0 8px var(--blue);animation:blink 1s infinite .5s}
+@keyframes tagFloat{0%,5%{opacity:0;transform:translateX(-50%) translateY(8px)}12%,82%{opacity:1;transform:translateX(-50%) translateY(0)}90%,100%{opacity:0;transform:translateX(-50%) translateY(-6px)}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.3rem var(--g);display:flex;justify-content:space-between;align-items:center;background:rgba(247,244,238,.92);backdrop-filter:blur(24px);border-bottom:1px solid rgba(30,25,20,.08)}
+.logo-w{display:flex;align-items:center;gap:.65rem;text-decoration:none}
+.logo-ic{width:30px;height:30px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-t{font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.1em;color:#1a1a18}
+.nav-r{display:flex;align-items:center;gap:2rem}
+.nav-tag{font-family:'DM Mono',monospace;font-size:.6rem;color:#8a8580;letter-spacing:.18em;text-transform:uppercase}
+.nav-btn{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffffff;background:var(--blue);padding:.55rem 1.2rem;border-radius:var(--r);text-decoration:none;transition:background .2s,transform .2s}
+.nav-btn:hover{background:var(--blue-lt);transform:translateY(-1px)}
+
+/* ── HERO INNER LAYOUT ── */
+.hero-in{position:relative;z-index:4;max-width:1200px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;padding:2rem 0 5rem}
+
+/* copy */
+.eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--blue);letter-spacing:.2em;text-transform:uppercase;border:1px solid rgba(232,72,48,.3);padding:.33rem .85rem;border-radius:2px;margin-bottom:1.8rem}
+.edot{width:5px;height:5px;background:var(--blue);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(4.5rem,11vw,10rem);line-height:.9;letter-spacing:.02em;color:var(--paper);margin-bottom:1.8rem}
+h1 .hl{color:var(--blue)}
+h1 .soft{-webkit-text-stroke:1.5px rgba(30,25,20,.3);color:transparent;opacity:1}
+.hero-desc{font-size:clamp(.92rem,1.8vw,1.08rem);color:#5a5550;line-height:1.78;margin-bottom:2.4rem;max-width:480px}
+.hero-desc strong{color:#1a1a18;font-weight:600}
+.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2.5rem}
+.pill{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:#6b6560;border:1px solid rgba(30,25,20,.12);padding:.28rem .72rem;border-radius:100px;display:flex;align-items:center;gap:.35rem}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.bstore{display:inline-flex;align-items:center;gap:.85rem;padding:.85rem 1.6rem;border-radius:var(--r);text-decoration:none;transition:all .25s ease}
+.band{background:var(--blue);color:var(--paper)}
+.band:hover{background:var(--blue-lt);transform:translateY(-2px);box-shadow:0 12px 32px rgba(232,72,48,.25)}
+.bios{background:transparent;color:#1a1a18;border:1px solid rgba(30,25,20,.25)}
+.bios:hover{border-color:var(--blue);background:rgba(232,72,48,.06);transform:translateY(-2px)}
+.bstore-ic{flex-shrink:0;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.bstore-t{display:flex;flex-direction:column}
+.bstore-s{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:.12rem}
+.bstore-m{font-size:.88rem;font-weight:700;letter-spacing:.04em}
+
+/* ── VIDEO CARD ── */
+.vcard{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#ffffff;box-shadow:0 2px 4px rgba(30,25,20,.04),0 12px 40px rgba(30,25,20,.1),0 0 0 1px rgba(30,25,20,.06)}
+.vchrome{background:rgba(30,25,20,.03);border-bottom:1px solid rgba(30,25,20,.08);padding:.7rem 1.1rem;display:flex;align-items:center;gap:.9rem}
+.vdots{display:flex;gap:.4rem}
+.vdot{width:9px;height:9px;border-radius:50%;background:var(--border)}
+.vtitle{font-family:'DM Mono',monospace;font-size:.58rem;color:#8a8580;letter-spacing:.15em;text-transform:uppercase;flex:1;text-align:center}
+.rec{display:flex;align-items:center;gap:.3rem;font-family:'DM Mono',monospace;font-size:.52rem;color:#4ade80;letter-spacing:.12em}
+.rdot{width:5px;height:5px;background:#4ade80;border-radius:50%;animation:blink 1.4s infinite}
+
+/* card body — video fills this */
+.vbody{position:relative;padding-bottom:60%;background:#f0ebe2;overflow:hidden}
+
+/* the actual video inside the card */
+.vbody-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  opacity:0;transition:opacity 1s ease;
+  z-index:0;
+}
+.vbody-video.loaded{opacity:1}
+
+/* scan UI overlay — sits above video, hides on play */
+.vover{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1.2rem;
+  background:rgba(244,241,234,.72);
+  backdrop-filter:blur(4px);
+  transition:opacity .5s ease,backdrop-filter .5s ease;
+  z-index:1;
+}
+.vover.dismissed{opacity:0;pointer-events:none;backdrop-filter:blur(0)}
+
+.sdemo{width:82%;max-width:310px;border:1px solid rgba(232,72,48,.18);border-radius:4px;background:rgba(232,72,48,.03);overflow:hidden;position:relative}
+.shead{background:rgba(232,72,48,.08);border-bottom:1px solid rgba(232,72,48,.12);padding:.48rem .9rem;font-family:'DM Mono',monospace;font-size:.52rem;color:var(--blue-lt);letter-spacing:.15em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.sok{color:#4ade80}
+.srows{padding:.55rem .9rem;display:flex;flex-direction:column;gap:.45rem}
+.srow{display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:.58rem}
+.slb{color:#6b6560}.sv{color:#1a1a18}.sv.ok{color:#4ade80}.sv.info{color:var(--gold)}
+.sbeam{position:absolute;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,rgba(232,72,48,.55),transparent);animation:scanOv 2.4s ease-in-out infinite}
+@keyframes scanOv{0%{top:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:100%;opacity:0}}
+.playbtn{width:54px;height:54px;background:var(--blue);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:none;transition:all .25s;box-shadow:0 0 0 0 rgba(232,72,48,.4);animation:pp 2.4s ease-in-out infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 0 rgba(232,72,48,.4)}50%{box-shadow:0 0 0 14px rgba(232,72,48,0)}}
+.playbtn:hover{background:var(--blue-lt);transform:scale(1.1)}
+.vcap{font-family:'DM Mono',monospace;font-size:.6rem;color:#6b6560;letter-spacing:.12em;text-transform:uppercase}
+.vfooter{background:rgba(30,25,20,.025);border-top:1px solid rgba(30,25,20,.08);padding:.7rem 1.1rem;display:flex;justify-content:space-around}
+.vfi{display:flex;flex-direction:column;align-items:center;gap:.18rem}
+.vfv{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:#1a1a18;letter-spacing:.05em;line-height:1}
+.vfv span{color:var(--blue)}
+.vfl{font-family:'DM Mono',monospace;font-size:.5rem;color:#6b6560;letter-spacing:.1em;text-transform:uppercase}
+
+/* ── HOW IT WORKS ── */
+.sec{padding:5rem var(--g) 4rem;border-top:1px solid rgba(30,25,20,.08)}
+.sec-lbl{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--blue);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
+.sec-lbl::before{content:'';display:block;width:22px;height:1px;background:var(--blue)}
+h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,4rem);letter-spacing:.02em;color:var(--paper);margin-bottom:3rem;line-height:1}
+h2 span{color:var(--blue)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(30,25,20,.06);border:1px solid rgba(30,25,20,.06);border-radius:var(--r);overflow:hidden}
+.step{background:#ffffff;padding:2rem 1.7rem;position:relative;transition:background .3s}
+.step:hover{background:rgba(232,72,48,.04)}
+.step::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .3s ease;transform-origin:left}
+.step:hover::after{transform:scaleX(1)}
+.snum{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--blue);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.1rem;display:block}
+.sic{width:42px;height:42px;border:1px solid rgba(232,72,48,.18);border-radius:8px;background:rgba(232,72,48,.06);display:flex;align-items:center;justify-content:center;margin-bottom:1.1rem;font-size:1.15rem}
+.step h3{font-size:.92rem;font-weight:700;color:#1a1a18;margin-bottom:.5rem;letter-spacing:.01em}
+.step p{font-size:.76rem;color:#6b6560;line-height:1.65}
+
+/* ── STATS ── */
+.stats{background:#f2ede3;padding:0 var(--g);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(30,25,20,.08);border-bottom:1px solid rgba(30,25,20,.08)}
+.stat{padding:2.4rem 0;border-right:1px solid var(--border)}
+.stat:first-child{padding-right:3rem}
+.stat:not(:first-child){padding-left:3rem}
+.stat:last-child{border-right:none}
+.stn{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4vw,3.6rem);color:#1a1a18;line-height:1;letter-spacing:.02em}
+.stn em{color:var(--blue);font-style:normal}
+.std{font-size:.74rem;color:#6b6560;line-height:1.55;margin-top:.35rem}
+
+/* ── WHO ── */
+.who{padding:5rem var(--g);border-top:1px solid rgba(30,25,20,.08)}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(30,25,20,.06);border:1px solid rgba(30,25,20,.06);border-radius:var(--r);overflow:hidden}
+.wcard{background:#ffffff;padding:3rem;transition:background .3s}
+.wcard:hover{background:rgba(232,72,48,.03);box-shadow:inset 0 0 0 1px rgba(232,72,48,.1)}
+.wtag{display:inline-flex;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);border:1px solid rgba(232,72,48,.25);padding:.28rem .7rem;border-radius:2px;margin-bottom:1.4rem}
+.wcard h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;color:#1a1a18;margin-bottom:.9rem;line-height:1}
+.wcard p{font-size:.85rem;color:#6b6560;line-height:1.7;margin-bottom:1.6rem}
+.wlist{display:flex;flex-direction:column;gap:.7rem}
+.wi{display:flex;align-items:flex-start;gap:.72rem;font-size:.8rem;color:#5a5550;line-height:1.5}
+.wck{width:17px;height:17px;flex-shrink:0;margin-top:.1rem;background:rgba(232,72,48,.08);border:1px solid rgba(232,72,48,.2);border-radius:3px;display:flex;align-items:center;justify-content:center}
+
+/* ── CTA ── */
+.cta{padding:6rem var(--g);position:relative;border-top:1px solid rgba(30,25,20,.08);text-align:center;overflow:hidden}
+.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 50%,rgba(40,110,70,.12) 0%,transparent 65%);pointer-events:none}
+.cta-lbl{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--blue);letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.2rem}
+.cta h2{font-size:clamp(2.8rem,8vw,6.5rem);margin-bottom:1.4rem;position:relative;z-index:2}
+.cta-sub{font-size:clamp(.88rem,1.8vw,1.08rem);color:#5a5550;line-height:1.72;max-width:500px;margin:0 auto 3rem;position:relative;z-index:2}
+.dl-panels{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;max-width:660px;margin:0 auto;position:relative;z-index:2}
+.dlp{border:1px solid var(--border);border-radius:8px;padding:2.4rem 2rem;text-align:left;background:#ffffff;transition:all .3s ease;position:relative;overflow:hidden}
+.dlp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,72,48,.05),transparent);opacity:0;transition:opacity .3s}
+.dlp:hover{border-color:rgba(232,72,48,.4);transform:translateY(-4px);box-shadow:0 20px 60px rgba(30,25,20,.15)}
+.dlp:hover::before{opacity:1}
+.dlplat{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:#8a8580;margin-bottom:1.4rem;display:flex;align-items:center;gap:.5rem}
+.dlos{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.05em;color:#1a1a18;margin-bottom:.45rem}
+.dldd{font-size:.76rem;color:#6b6560;line-height:1.6;margin-bottom:1.6rem}
+.dlreq{font-family:'DM Mono',monospace;font-size:.52rem;color:#8a8580;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.4rem}
+.dlbtn{display:flex;align-items:center;gap:.75rem;background:var(--blue);color:var(--paper);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;padding:.82rem 1.35rem;border-radius:var(--r);transition:all .25s}
+.dlbtn:hover{background:var(--blue-lt);transform:translateY(-1px)}
+.dlbtn-ios{background:transparent;border:1px solid rgba(30,25,20,.18);color:var(--paper)}
+.dlbtn-ios:hover{background:rgba(232,72,48,.07);border-color:var(--blue)}
+
+/* ── FAQ ── */
+.faq{padding:5rem var(--g);border-top:1px solid rgba(30,25,20,.08);max-width:800px}
+.fqi{border-bottom:1px solid rgba(30,25,20,.08);padding:1.4rem 0}
+.fqq{font-size:.92rem;font-weight:700;color:#1a1a18;margin-bottom:.6rem}
+.fqa{font-size:.8rem;color:#6b6560;line-height:1.7}
+
+/* ── FOOTER ── */
+footer{padding:2.4rem var(--g);border-top:1px solid rgba(30,25,20,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.flogo{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.1em;color:#8a8580}
+.flinks{display:flex;gap:1.4rem;flex-wrap:wrap}
+.flink{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--mid);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:color .2s}
+.flink:hover{color:#1a1a18}
+.fcopy{font-family:'DM Mono',monospace;font-size:.55rem;color:rgba(30,25,20,.35);letter-spacing:.1em}
+
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(22px);animation:rvUp .7s ease forwards}
+@keyframes rvUp{to{opacity:1;transform:translateY(0)}}
+.d1{animation-delay:.08s}.d2{animation-delay:.2s}.d3{animation-delay:.32s}.d4{animation-delay:.44s}.d5{animation-delay:.56s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero-in{grid-template-columns:1fr;gap:3rem}
+  .steps{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat{border-right:none;border-bottom:1px solid rgba(30,25,20,.08);padding-left:0!important;padding-bottom:1.8rem}
+  .stat:last-child{border-bottom:none}
+  .who-grid{grid-template-columns:1fr}
+  .dl-panels{grid-template-columns:1fr;max-width:360px}
+}
+@media(max-width:600px){
+  .steps{grid-template-columns:1fr}
+  .nav-r .nav-btn{display:none}
+  footer{flex-direction:column;text-align:center}
+  .flinks{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<div id="car-beam"></div>
+
+<!-- PORSCHE CAR CURSOR -->
+<svg id="car-cursor" viewBox="0 0 160 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="80" cy="50" rx="62" ry="4" fill="rgba(0,0,0,.35)"/>
+  <path d="M12 32 Q10 32 9 30 L9 26 Q9 22 13 22 L140 22 Q146 22 148 26 L150 30 Q151 32 148 33 L12 32Z" fill="#2a2a28" stroke="rgba(30,25,20,.10)" stroke-width=".8"/>
+  <path d="M22 33 L138 33 Q142 33 143 36 L142 38 Q141 40 138 40 L22 40 Q18 40 17 38 L17 36 Q17 33 22 33Z" fill="#1e1e1c" stroke="rgba(100,160,120,.12)" stroke-width=".6"/>
+  <path d="M45 22 Q52 8 68 5 L102 5 Q114 5 122 14 L130 22Z" fill="#181816" stroke="rgba(30,25,20,.08)" stroke-width=".8"/>
+  <path d="M116 22 L110 14 Q106 8 100 7 L90 7 L87 22Z" fill="rgba(200,220,255,.07)" stroke="rgba(200,220,255,.15)" stroke-width=".6"/>
+  <path d="M66 22 L68 8 L80 7 L83 22Z" fill="rgba(200,220,255,.06)" stroke="rgba(200,220,255,.12)" stroke-width=".6"/>
+  <path d="M86 22 L87 9 L100 8 L107 22Z" fill="rgba(200,220,255,.05)" stroke="rgba(200,220,255,.1)" stroke-width=".5"/>
+  <line x1="86" y1="7" x2="84" y2="22" stroke="rgba(30,25,20,.18)" stroke-width="1.2"/>
+  <line x1="108" y1="7" x2="110" y2="22" stroke="rgba(30,25,20,.18)" stroke-width="1.2"/>
+  <path d="M20 28 Q80 26 145 28" stroke="rgba(30,25,20,.08)" stroke-width=".7" fill="none"/>
+  <rect x="90" y="28" width="10" height="1.8" rx=".9" fill="rgba(30,25,20,.25)"/>
+  <rect x="68" y="28" width="9" height="1.8" rx=".9" fill="rgba(100,160,120,.32)"/>
+  <path d="M140 38 L152 36 L153 38 L142 40Z" fill="#111" stroke="rgba(100,160,120,.12)" stroke-width=".5"/>
+  <path d="M8 38 L17 38 L17 40 L8 40Z" fill="#111"/>
+  <rect x="141" y="24" width="11" height="3" rx="1" fill="rgba(255,248,220,.95)"/>
+  <rect x="141" y="28" width="9" height="2" rx="1" fill="rgba(255,230,100,.7)"/>
+  <rect x="140" y="23" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,248,220,.3)" stroke-width=".6"/>
+  <rect x="8" y="24" width="12" height="10" rx="1.5" fill="rgba(232,72,48,.85)"/>
+  <rect x="8" y="25" width="10" height="3" rx="1" fill="rgba(255,100,80,.9)"/>
+  <rect x="7" y="23" width="14" height="12" rx="2" fill="none" stroke="rgba(232,72,48,.35)" stroke-width=".8"/>
+  <ellipse cx="22" cy="40" rx="3" ry="1.8" fill="#0e0e0c" stroke="rgba(30,25,20,.18)" stroke-width=".6"/>
+  <ellipse cx="30" cy="40" rx="3" ry="1.8" fill="#0e0e0c" stroke="rgba(30,25,20,.18)" stroke-width=".6"/>
+  <circle cx="120" cy="42" r="9" fill="#0a0a08" stroke="rgba(100,160,120,.32)" stroke-width="1.5"/>
+  <circle cx="120" cy="42" r="6" fill="#0e0e0c" stroke="rgba(100,160,120,.2)" stroke-width=".8"/>
+  <line x1="120" y1="36" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="114" y1="38" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="114" y1="46" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="120" y1="48" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="126" y1="46" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="126" y1="38" x2="120" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <circle cx="120" cy="42" r="2" fill="rgba(100,160,120,.4)"/>
+  <path d="M116 37 Q113 39 113 42 Q113 45 116 47" stroke="rgba(232,72,48,.5)" stroke-width="1.2" fill="none"/>
+  <circle cx="40" cy="42" r="9" fill="#0a0a08" stroke="rgba(100,160,120,.32)" stroke-width="1.5"/>
+  <circle cx="40" cy="42" r="6" fill="#0e0e0c" stroke="rgba(100,160,120,.2)" stroke-width=".8"/>
+  <line x1="40" y1="36" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="34" y1="38" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="34" y1="46" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="40" y1="48" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="46" y1="46" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <line x1="46" y1="38" x2="40" y2="42" stroke="rgba(30,25,20,.25)" stroke-width=".8"/>
+  <circle cx="40" cy="42" r="2" fill="rgba(100,160,120,.4)"/>
+  <path d="M36 37 Q33 39 33 42 Q33 45 36 47" stroke="rgba(232,72,48,.5)" stroke-width="1.2" fill="none"/>
+  <line x1="78" y1="5" x2="78" y2="1" stroke="rgba(30,25,20,.18)" stroke-width=".7"/>
+  <circle cx="80" cy="33" r="2.5" fill="none" stroke="rgba(100,160,120,.2)" stroke-width=".6"/>
+</svg>
+
+<!-- NAV -->
+<nav role="banner">
+  <a href="/" class="logo-w" aria-label="DealScan Home">
+    <div class="logo-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg></div>
+    <span class="logo-t">DEALSCAN</span>
+  </a>
+  <div class="nav-r">
+    <span class="nav-tag">Smart Car Buying · Android &amp; iOS</span>
+    <a href="#download" class="nav-btn">Get the App</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main id="main">
+<section class="hero" aria-label="Hero" itemscope itemtype="https://schema.org/SoftwareApplication">
+
+  <!-- BACKGROUND VIDEO — fills entire hero -->
+  <video
+    id="heroBgVideo"
+    class="hero-video-bg"
+    autoplay muted loop playsinline
+    preload="auto"
+    aria-hidden="true"
+  >
+    <source src="7154222-hd_1920_1080_25fps.mp4" type="video/mp4">
+  </video>
+  <!-- light overlay keeps text legible over video -->
+  <div class="hero-video-overlay"></div>
+
+  <!-- STATIC FALLBACK layers (show until video loads) -->
+  <div class="hbg"></div>
+  <div class="hgrid"></div>
+
+  <div class="scan-beam"></div>
+
+  <!-- ANIMATED ROAD SCENE at bottom -->
+  <div class="road-scene" aria-hidden="true">
+    <div class="road">
+      <div class="road-lines"></div>
+    </div>
+    <div class="exhaust-wrap" style="left:-220px">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="road-car-wrap">
+      <div class="road-headlight"></div>
+      <div class="road-headlight-low"></div>
+      <div class="road-ground-glow"></div>
+      <div class="road-tailglow"></div>
+      <div class="honk-wrap">
+        <div class="honk-ring"></div>
+        <div class="honk-ring"></div>
+        <div class="honk-ring"></div>
+        <div class="honk-text">BEEP BEEP!</div>
+      </div>
+      <svg viewBox="0 0 160 52" fill="none" xmlns="http://www.w3.org/2000/svg" width="160" height="52">
+        <ellipse cx="80" cy="50" rx="60" ry="3.5" fill="rgba(0,0,0,.4)"/>
+        <path d="M12 32 Q10 32 9 30 L9 26 Q9 22 13 22 L140 22 Q146 22 148 26 L150 30 Q151 32 148 33 L12 32Z" fill="#2a2a28" stroke="rgba(30,25,20,.10)" stroke-width=".8"/>
+        <path d="M22 33 L138 33 Q142 33 143 36 L142 38 Q141 40 138 40 L22 40 Q18 40 17 38 L17 36 Q17 33 22 33Z" fill="#1e1e1c" stroke="rgba(200,192,176,.07)" stroke-width=".6"/>
+        <path d="M45 22 Q52 8 68 5 L102 5 Q114 5 122 14 L130 22Z" fill="#181816" stroke="rgba(30,25,20,.08)" stroke-width=".8"/>
+        <path d="M116 22 L110 14 Q106 8 100 7 L90 7 L87 22Z" fill="rgba(200,220,255,.07)" stroke="rgba(200,220,255,.14)" stroke-width=".6"/>
+        <path d="M66 22 L68 8 L80 7 L83 22Z" fill="rgba(200,220,255,.06)" stroke="rgba(200,220,255,.11)" stroke-width=".6"/>
+        <path d="M86 22 L87 9 L100 8 L107 22Z" fill="rgba(200,220,255,.05)" stroke="rgba(200,220,255,.09)" stroke-width=".5"/>
+        <line x1="86" y1="7" x2="84" y2="22" stroke="rgba(100,160,120,.24)" stroke-width="1.2"/>
+        <line x1="108" y1="7" x2="110" y2="22" stroke="rgba(100,160,120,.24)" stroke-width="1.2"/>
+        <path d="M20 28 Q80 26 145 28" stroke="rgba(100,160,120,.12)" stroke-width=".7" fill="none"/>
+        <rect x="90" y="28" width="10" height="1.8" rx=".9" fill="rgba(100,160,120,.35)"/>
+        <rect x="68" y="28" width="9" height="1.8" rx=".9" fill="rgba(100,160,120,.28)"/>
+        <path d="M140 38 L152 36 L153 38 L142 40Z" fill="#111" stroke="rgba(200,192,176,.07)" stroke-width=".5"/>
+        <rect x="141" y="24" width="11" height="3" rx="1" fill="rgba(255,248,220,.95)"/>
+        <rect x="141" y="28" width="9" height="2" rx="1" fill="rgba(255,230,100,.7)"/>
+        <rect x="140" y="23" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,248,220,.3)" stroke-width=".6"/>
+        <rect x="8" y="24" width="12" height="10" rx="1.5" fill="rgba(232,72,48,.88)"/>
+        <rect x="8" y="25" width="10" height="3" rx="1" fill="rgba(255,100,80,.92)"/>
+        <rect x="7" y="23" width="14" height="12" rx="2" fill="none" stroke="rgba(232,72,48,.4)" stroke-width=".8"/>
+        <ellipse cx="22" cy="40" rx="3" ry="1.8" fill="#0e0e0c" stroke="rgba(100,160,120,.24)" stroke-width=".6"/>
+        <ellipse cx="30" cy="40" rx="3" ry="1.8" fill="#0e0e0c" stroke="rgba(100,160,120,.24)" stroke-width=".6"/>
+        <circle cx="120" cy="42" r="9" fill="#0a0a08" stroke="rgba(100,160,120,.28)" stroke-width="1.5"/>
+        <circle cx="120" cy="42" r="6" fill="#0e0e0c" stroke="rgba(30,25,20,.10)" stroke-width=".8"/>
+        <line x1="120" y1="36" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="114" y1="38" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="114" y1="46" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="120" y1="48" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="126" y1="46" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="126" y1="38" x2="120" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <circle cx="120" cy="42" r="2.2" fill="rgba(30,25,20,.25)"/>
+        <path d="M116 37 Q113 39 113 42 Q113 45 116 47" stroke="rgba(232,72,48,.5)" stroke-width="1.3" fill="none"/>
+        <circle cx="40" cy="42" r="9" fill="#0a0a08" stroke="rgba(100,160,120,.28)" stroke-width="1.5"/>
+        <circle cx="40" cy="42" r="6" fill="#0e0e0c" stroke="rgba(30,25,20,.10)" stroke-width=".8"/>
+        <line x1="40" y1="36" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="34" y1="38" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="34" y1="46" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="40" y1="48" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="46" y1="46" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <line x1="46" y1="38" x2="40" y2="42" stroke="rgba(100,160,120,.35)" stroke-width=".8"/>
+        <circle cx="40" cy="42" r="2.2" fill="rgba(30,25,20,.25)"/>
+        <path d="M36 37 Q33 39 33 42 Q33 45 36 47" stroke="rgba(232,72,48,.5)" stroke-width="1.3" fill="none"/>
+        <line x1="78" y1="5" x2="78" y2="1" stroke="rgba(100,160,120,.24)" stroke-width=".7"/>
+      </svg>
+    </div>
+    <div class="drive-tag">Drive It Home Today</div>
+  </div>
+
+  <!-- HERO CONTENT GRID -->
+  <div class="hero-in">
+
+    <!-- LEFT COPY -->
+    <div>
+      <div class="eyebrow rv d1"><span class="edot"></span>Car Buying Intelligence · Android &amp; iOS</div>
+      <h1 class="rv d2" itemprop="name">
+        UNDERSTAND<br>
+        EVERY<br>
+        <span class="hl">CAR DEAL</span><br>
+        <span class="soft">CLEARLY.</span>
+      </h1>
+      <p class="hero-desc rv d3" itemprop="description">
+        When a dealer presents their offer, DealScan <strong>reads every number in seconds</strong> — explaining financing terms, pricing structure, and optional add-ons in plain, simple language. <strong>Informed buyers and transparent dealers make better deals together.</strong>
+      </p>
+      <div class="pills rv d4">
+        <span class="pill">⚡ Instant Scan</span>
+        <span class="pill">📊 Plain-Language Breakdown</span>
+        <span class="pill">🔒 Private &amp; Secure</span>
+        <span class="pill">🚘 All Brands &amp; Dealers</span>
+      </div>
+      <div class="hero-btns rv d5">
+        <a href="#download-android" class="bstore band" aria-label="Download DealScan on Google Play">
+          <div class="bstore-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M3.18 23.76c.33.18.7.2 1.06.06l11.62-6.7-2.5-2.5-10.18 9.14zm-1.76-20.2C1.16 3.9 1 4.3 1 4.82v14.36c0 .52.16.92.43 1.18l.07.06 8.04-8.04v-.18L1.42 3.56zm17.29 8.28l-2.27-1.31-2.78 2.78 2.78 2.78 2.28-1.32c.65-.38.65-1.56-.01-1.93zM4.24.18L15.86 6.88l-2.5 2.5L3.18.24C3.52.1 3.9.12 4.24.18z"/></svg></div>
+          <div class="bstore-t"><span class="bstore-s">Get it on</span><span class="bstore-m">Google Play</span></div>
+        </a>
+        <a href="#download-ios" class="bstore bios" aria-label="Download DealScan on App Store">
+          <div class="bstore-ic"><svg viewBox="0 0 814 1000" width="18" height="18" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 405.8 11.7 269.4 11.7 195.8c0-61.6 23.7-119.3 65.8-163.1C125.9 4.5 185.2-13.7 244.5-13.7c91.9 0 163.6 61.6 219.2 61.6 54.3 0 136.3-65.4 240.8-65.4 38.9 0 144.5 6.4 213.2 98.4zm-171.5-130.7c-35.5 40.8-97.8 71.9-138.6 71.9-6.4 0-12.8-.6-19.2-1.9-1.3-6.4-1.9-12.8-1.9-20.6 0-39.5 18.6-81.6 52.1-113.3 33.5-31.7 93.3-55.4 141.3-57.3 1.3 7.7 1.9 14.1 1.9 21.8 0 39.5-16 81.6-35.6 99.4z"/></svg></div>
+          <div class="bstore-t"><span class="bstore-s">Download on</span><span class="bstore-m">App Store</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT VIDEO CARD -->
+    <div class="rv d3">
+      <article class="vcard">
+        <div class="vchrome">
+          <div class="vdots">
+            <div class="vdot"></div>
+            <div class="vdot" style="background:rgba(255,200,0,.35)"></div>
+            <div class="vdot" style="background:rgba(232,72,48,.5)"></div>
+          </div>
+          <span class="vtitle">DealScan · Offer Analyzer</span>
+          <span class="rec"><span class="rdot"></span>LIVE</span>
+        </div>
+
+        <div class="vbody">
+          <!-- VIDEO plays inside the card -->
+          <video
+            id="cardVideo"
+            class="vbody-video"
+            autoplay muted loop playsinline
+            preload="auto"
+            aria-hidden="true"
+          >
+            <source src="7154222-hd_1920_1080_25fps.mp4" type="video/mp4">
+          </video>
+
+          <!-- Scan UI overlay — dismiss by clicking play button -->
+          <div class="vover" id="vover">
+            <div class="sdemo">
+              <div class="sbeam"></div>
+              <div class="shead"><span>Offer Sheet</span><span class="sok">✓ Decoded</span></div>
+              <div class="srows">
+                <div class="srow"><span class="slb">MSRP</span><span class="sv">$38,450</span></div>
+                <div class="srow"><span class="slb">Sale Price</span><span class="sv ok">$36,200</span></div>
+                <div class="srow"><span class="slb">Dealer Fee</span><span class="sv info">$895 ⚑</span></div>
+                <div class="srow"><span class="slb">APR</span><span class="sv">6.9%</span></div>
+                <div class="srow"><span class="slb">Ext. Warranty</span><span class="sv info">$2,100 ⚑</span></div>
+                <div class="srow"><span class="slb">Monthly</span><span class="sv">$641 / mo</span></div>
+              </div>
+            </div>
+            <button class="playbtn" id="playBtn" aria-label="Play video fullscreen">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <span class="vcap">▶ &nbsp;Watch the 90-second walkthrough</span>
+          </div>
+        </div>
+
+        <div class="vfooter">
+          <div class="vfi"><span class="vfv">90<span>s</span></span><span class="vfl">Full Decode</span></div>
+          <div class="vfi"><span class="vfv">4.8<span>★</span></span><span class="vfl">App Rating</span></div>
+          <div class="vfi"><span class="vfv">50<span>K+</span></span><span class="vfl">Deals Scanned</span></div>
+          <div class="vfi"><span class="vfv">All<span> ✓</span></span><span class="vfl">Dealers</span></div>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="how-it-works">
+  <div class="sec-lbl">How It Works</div>
+  <h2>FOUR STEPS TO A <span>CONFIDENT</span> DEAL</h2>
+  <div class="steps" role="list">
+    <div class="step" role="listitem">
+      <span class="snum">Step 01</span><div class="sic">📋</div>
+      <h3>Receive the Offer Sheet</h3>
+      <p>Your dealer presents their first proposal — a standard sheet with pricing, financing terms, and optional add-ons. Take your time, no pressure.</p>
+    </div>
+    <div class="step" role="listitem">
+      <span class="snum">Step 02</span><div class="sic">📱</div>
+      <h3>Open DealScan &amp; Scan</h3>
+      <p>Point your phone at the document. DealScan's smart OCR reads every line item — price, APR, fees, and packages — in under 90 seconds.</p>
+    </div>
+    <div class="step" role="listitem">
+      <span class="snum">Step 03</span><div class="sic">📊</div>
+      <h3>Get a Clear Breakdown</h3>
+      <p>Every number is explained in plain English. See what's included, what's optional, and what each item actually means for your monthly payment.</p>
+    </div>
+    <div class="step" role="listitem">
+      <span class="snum">Step 04</span><div class="sic">🤝</div>
+      <h3>Have a Productive Conversation</h3>
+      <p>Engage your salesperson from a place of knowledge. Informed buyers and transparent dealers reach agreements faster — and with greater confidence on both sides.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats" role="region" aria-label="App statistics">
+  <div class="stat"><div class="stn">90<em>s</em></div><div class="std">Average time to fully decode any dealer offer sheet</div></div>
+  <div class="stat"><div class="stn">50<em>K+</em></div><div class="std">Car deals analyzed across all major brands and dealers</div></div>
+  <div class="stat"><div class="stn">4.8<em>★</em></div><div class="std">Average app store rating from verified car buyers</div></div>
+  <div class="stat"><div class="stn">All<em> ✓</em></div><div class="std">New, used, and CPO dealerships supported nationwide</div></div>
+</div>
+
+<!-- WHO IT'S FOR -->
+<section class="who" id="who">
+  <div class="sec-lbl">Built for Everyone at the Table</div>
+  <h2>CLARITY FOR <span>BUYERS</span>, TRUST FOR <span>DEALERS</span></h2>
+  <div class="who-grid">
+    <div class="wcard">
+      <div class="wtag">🧑‍💼 For Car Buyers</div>
+      <h3>SHOP WITH CONFIDENCE</h3>
+      <p>Whether it's your first car or your tenth, DealScan gives you the context to ask the right questions and make decisions you'll feel great about — both at signing and years later.</p>
+      <ul class="wlist">
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Understand every line on your offer sheet in plain English</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Know what's standard and what's optional — without guessing</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Ask informed questions and have a real, two-way conversation</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Leave with complete confidence in every decision you made</li>
+      </ul>
+    </div>
+    <div class="wcard">
+      <div class="wtag">🏢 For Dealerships</div>
+      <h3>BUILD LASTING TRUST</h3>
+      <p>When buyers understand your offer sheet, they trust the process. Trust drives referrals, loyalty, and repeat business. DealScan supports dealerships committed to a professional, transparent customer experience.</p>
+      <ul class="wlist">
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Informed buyers close faster with fewer objections</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Transparent deals create stronger relationships and referrals</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Support an educated buyer base — the future of auto retail</li>
+        <li class="wi"><div class="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" stroke-width="1.5"/></svg></div>Position your store as a customer-first, professional operation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD CTA -->
+<section class="cta" id="download">
+  <div class="cta-lbl">Free to Download · Android &amp; iOS</div>
+  <h2>YOUR NEXT CAR DEAL,<br><span>FULLY UNDERSTOOD.</span></h2>
+  <p class="cta-sub">Download DealScan free and walk into any dealership with the clarity and context to make a decision you'll feel confident about.</p>
+  <div class="dl-panels">
+    <article class="dlp" id="download-android" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="dlplat"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.33.18.7.2 1.06.06l11.62-6.7-2.5-2.5-10.18 9.14zm-1.76-20.2C1.16 3.9 1 4.3 1 4.82v14.36c0 .52.16.92.43 1.18l.07.06 8.04-8.04v-.18L1.42 3.56zm17.29 8.28l-2.27-1.31-2.78 2.78 2.78 2.78 2.28-1.32c.65-.38.65-1.56-.01-1.93zM4.24.18L15.86 6.88l-2.5 2.5L3.18.24C3.52.1 3.9.12 4.24.18z"/></svg>Google Play</div>
+      <div class="dlos" itemprop="name">ANDROID</div>
+      <p class="dldd" itemprop="description">Full-featured offer scanner for Android. Offline-capable, lightweight, and fast.</p>
+      <div class="dlreq">Requires Android 8.0+</div>
+      <a href="#" class="dlbtn" aria-label="Download DealScan on Google Play" itemprop="downloadUrl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.33.18.7.2 1.06.06l11.62-6.7-2.5-2.5-10.18 9.14zm-1.76-20.2C1.16 3.9 1 4.3 1 4.82v14.36c0 .52.16.92.43 1.18l.07.06 8.04-8.04v-.18L1.42 3.56zm17.29 8.28l-2.27-1.31-2.78 2.78 2.78 2.78 2.28-1.32c.65-.38.65-1.56-.01-1.93zM4.24.18L15.86 6.88l-2.5 2.5L3.18.24C3.52.1 3.9.12 4.24.18z"/></svg>
+        Download Free
+      </a>
+    </article>
+    <article class="dlp" id="download-ios" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="dlplat"><svg width="11" height="13" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 405.8 11.7 269.4 11.7 195.8c0-61.6 23.7-119.3 65.8-163.1C125.9 4.5 185.2-13.7 244.5-13.7c91.9 0 163.6 61.6 219.2 61.6 54.3 0 136.3-65.4 240.8-65.4 38.9 0 144.5 6.4 213.2 98.4zm-171.5-130.7c-35.5 40.8-97.8 71.9-138.6 71.9-6.4 0-12.8-.6-19.2-1.9-1.3-6.4-1.9-12.8-1.9-20.6 0-39.5 18.6-81.6 52.1-113.3 33.5-31.7 93.3-55.4 141.3-57.3 1.3 7.7 1.9 14.1 1.9 21.8 0 39.5-16 81.6-35.6 99.4z"/></svg>App Store</div>
+      <div class="dlos" itemprop="name">iPHONE</div>
+      <p class="dldd" itemprop="description">Optimized for iPhone with haptic feedback and crisp scanning on any screen size.</p>
+      <div class="dlreq">Requires iOS 14.0+</div>
+      <a href="#" class="dlbtn dlbtn-ios" aria-label="Download DealScan on Apple App Store" itemprop="downloadUrl">
+        <svg width="11" height="13" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 405.8 11.7 269.4 11.7 195.8c0-61.6 23.7-119.3 65.8-163.1C125.9 4.5 185.2-13.7 244.5-13.7c91.9 0 163.6 61.6 219.2 61.6 54.3 0 136.3-65.4 240.8-65.4 38.9 0 144.5 6.4 213.2 98.4zm-171.5-130.7c-35.5 40.8-97.8 71.9-138.6 71.9-6.4 0-12.8-.6-19.2-1.9-1.3-6.4-1.9-12.8-1.9-20.6 0-39.5 18.6-81.6 52.1-113.3 33.5-31.7 93.3-55.4 141.3-57.3 1.3 7.7 1.9 14.1 1.9 21.8 0 39.5-16 81.6-35.6 99.4z"/></svg>
+        Download Free
+      </a>
+    </article>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq" itemscope itemtype="https://schema.org/FAQPage">
+  <div class="sec-lbl">FAQ</div>
+  <h2>COMMON <span>QUESTIONS</span></h2>
+  <div class="fqi" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="fqq" itemprop="name">How does DealScan work at the dealership?</div>
+    <div class="fqa" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><span itemprop="text">When your dealer presents their offer sheet, open DealScan and point your phone's camera at the document. The app reads every number using smart OCR — price, financing terms, fees, and optional add-ons — and displays a plain-language breakdown in under 90 seconds.</span></div>
+  </div>
+  <div class="fqi" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="fqq" itemprop="name">Is DealScan designed to work against dealerships?</div>
+    <div class="fqa" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><span itemprop="text">Absolutely not. DealScan is built to improve communication between buyers and dealers. When buyers understand the numbers, conversations are smoother, trust is higher, and deals close faster.</span></div>
+  </div>
+  <div class="fqi" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="fqq" itemprop="name">Is DealScan free to download?</div>
+    <div class="fqa" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><span itemprop="text">Yes, DealScan is free to download on both Google Play (Android) and the App Store (iPhone and iPad). Core offer sheet scanning and plain-language breakdown features are included at no cost.</span></div>
+  </div>
+  <div class="fqi" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="fqq" itemprop="name">Which car brands and dealerships does DealScan support?</div>
+    <div class="fqa" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><span itemprop="text">DealScan supports standard offer sheet formats used at all major US dealerships — Toyota, Honda, Ford, GM, BMW, Mercedes-Benz, and independent lots. If a dealer uses a standard pricing sheet, DealScan can read it.</span></div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+    <span class="flogo">DEALSCAN</span>
+    <nav class="flinks">
+      <a href="#how-it-works" class="flink">How It Works</a>
+      <a href="#who" class="flink">Who It's For</a>
+      <a href="#faq" class="flink">FAQ</a>
+      <a href="#download" class="flink">Download</a>
+      <a href="/privacy" class="flink">Privacy</a>
+      <a href="/terms" class="flink">Terms</a>
+    </nav>
+  </div>
+  <span class="fcopy">© 2025 DealScan · Smart Car Buying Technology</span>
+</footer>
+
+<script>
+// ── CAR CURSOR ──
+const carCursor = document.getElementById('car-cursor');
+const carBeam   = document.getElementById('car-beam');
+let mx=0, my=0, cx=0, cy=0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function tick(){
+  cx += (mx - cx) * 0.12;
+  cy += (my - cy) * 0.12;
+  carCursor.style.left = cx + 'px';
+  carCursor.style.top  = cy + 'px';
+  carBeam.style.left   = (cx + 40) + 'px';
+  carBeam.style.top    = cy + 'px';
+  carBeam.style.transform = 'translateY(-50%)';
+  requestAnimationFrame(tick);
+})();
+document.querySelectorAll('a,button,.step,.wcard,.dlp').forEach(el => {
+  el.addEventListener('mouseenter', () => { carCursor.classList.add('on-link'); carBeam.classList.add('on-link'); });
+  el.addEventListener('mouseleave', () => { carCursor.classList.remove('on-link'); carBeam.classList.remove('on-link'); });
+});
+
+// ── HERO BG VIDEO — slow + fade in ──
+const heroBg = document.getElementById('heroBgVideo');
+if (heroBg) {
+  heroBg.addEventListener('canplay', () => {
+    heroBg.playbackRate = 0.70;
+    heroBg.classList.add('loaded');
+  }, { once: true });
+  heroBg.addEventListener('error', () => { heroBg.style.display = 'none'; });
+}
+
+// ── CARD VIDEO — fade in ──
+const cardVid = document.getElementById('cardVideo');
+if (cardVid) {
+  cardVid.addEventListener('canplay', () => {
+    cardVid.playbackRate = 0.85;
+    cardVid.classList.add('loaded');
+  }, { once: true });
+}
+
+// ── PLAY BTN — dismiss scan overlay to reveal video ──
+document.getElementById('playBtn').addEventListener('click', () => {
+  document.getElementById('vover').classList.add('dismissed');
+  if (cardVid) { cardVid.currentTime = 0; cardVid.play(); }
+});
+
+// ── HONK (Web Audio API) ──
+let audioCtx = null;
+function playHonk() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    [440, 550].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.04);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.96, audioCtx.currentTime + 0.22 + i * 0.04);
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.04);
+      gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.02 + i * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35 + i * 0.04);
+      const lfo = audioCtx.createOscillator(), lfoG = audioCtx.createGain();
+      lfo.frequency.value = 28; lfoG.gain.value = 8;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      lfo.start(audioCtx.currentTime + i * 0.04); lfo.stop(audioCtx.currentTime + 0.4 + i * 0.04);
+      osc.start(audioCtx.currentTime + i * 0.04); osc.stop(audioCtx.currentTime + 0.4 + i * 0.04);
+    });
+  } catch(e) {}
+}
+function scheduleHonks() {
+  const cycleMs = 7000, honkAt = cycleMs * 0.58;
+  const fire = () => setTimeout(() => { playHonk(); setTimeout(playHonk, 280); }, honkAt);
+  fire(); setInterval(fire, cycleMs);
+}
+let honkStarted = false;
+document.addEventListener('mousemove', () => { if (!honkStarted) { honkStarted = true; scheduleHonks(); } }, { once: true });
+
+// ── SCROLL REVEAL ──
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; obs.unobserve(e.target); }
+  });
+}, { threshold: .1 });
+document.querySelectorAll('.step,.stat,.wcard,.dlp,.fqi').forEach(el => {
+  el.style.cssText += 'opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
