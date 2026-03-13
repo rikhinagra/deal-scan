@@ -3,20 +3,21 @@
 import { useEffect, useRef } from 'react';
 
 export default function HonkSound() {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
+        const video = videoRef.current;
+        if (!video) return;
 
         const roadScene = document.querySelector('.road-scene');
         if (!roadScene) return;
 
-        // Muted autoplay is allowed by ALL browsers without any click.
-        // Changing .muted does NOT require user interaction — this is the key trick.
+        // <video autoplay muted> is guaranteed to autoplay in ALL browsers.
+        // Toggling .muted does NOT require any user interaction.
+        // So: muted always → unmute only when road scene is on screen.
         const io = new IntersectionObserver(
             (entries) => {
-                audio.muted = !entries[0].isIntersecting;
+                video.muted = !entries[0].isIntersecting;
             },
             { threshold: 0.1 }
         );
@@ -26,12 +27,14 @@ export default function HonkSound() {
     }, []);
 
     return (
-        <audio
-            ref={audioRef}
-            src="/honk.mp3"
+        <video
+            ref={videoRef}
+            src="/honk.mp4"
             autoPlay
             muted
             loop
+            playsInline
+            style={{ display: 'none' }}
         />
     );
 }
