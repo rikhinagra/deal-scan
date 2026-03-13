@@ -3,10 +3,11 @@
 import { useEffect, useRef } from 'react';
 
 export default function HonkSound() {
-    const audioRef   = useRef<HTMLAudioElement | null>(null);
-    const playingRef = useRef(false);
-    const visibleRef = useRef(false);
-    const rafRef     = useRef<number>(0);
+    const audioRef    = useRef<HTMLAudioElement | null>(null);
+    const playingRef  = useRef(false);
+    const visibleRef  = useRef(false);
+    const unlockedRef = useRef(false);
+    const rafRef      = useRef<number>(0);
 
     useEffect(() => {
         const audio   = new Audio('/honk.mp3');
@@ -16,7 +17,7 @@ export default function HonkSound() {
         audioRef.current = audio;
 
         const tryPlay = () => {
-            if (playingRef.current || !visibleRef.current) return;
+            if (playingRef.current || !visibleRef.current || !unlockedRef.current) return;
             playingRef.current = true;
             audio.play().catch(() => { playingRef.current = false; });
         };
@@ -28,7 +29,17 @@ export default function HonkSound() {
             audio.currentTime = 0;
         };
 
-        // IntersectionObserver — play when road scene is on screen, stop when not
+        // Unlock on any user interaction — click on desktop, touch on mobile
+        const unlock = () => {
+            unlockedRef.current = true;
+            if (visibleRef.current) tryPlay();
+        };
+
+        window.addEventListener('click',      unlock);
+        window.addEventListener('touchstart', unlock, { passive: true });
+        window.addEventListener('keydown',    unlock);
+
+        // Play when road scene enters screen, stop when it leaves
         const roadScene = document.querySelector('.road-scene');
         let io: IntersectionObserver | null = null;
 
@@ -44,7 +55,6 @@ export default function HonkSound() {
             io.observe(roadScene);
         }
 
-        // RAF — also stop if section leaves during animation
         const tick = () => {
             if (!visibleRef.current) tryStop();
             rafRef.current = requestAnimationFrame(tick);
@@ -54,6 +64,9 @@ export default function HonkSound() {
         return () => {
             cancelAnimationFrame(rafRef.current);
             io?.disconnect();
+            window.removeEventListener('click',      unlock);
+            window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('keydown',    unlock);
             tryStop();
             audio.src = '';
         };
