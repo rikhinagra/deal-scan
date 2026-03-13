@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function HonkSound() {
-    const audioRef   = useRef<HTMLAudioElement | null>(null);
-    const playingRef = useRef(false);
+    const audioRef    = useRef<HTMLAudioElement | null>(null);
+    const playingRef  = useRef(false);
     const unlockedRef = useRef(false);
-    const visibleRef = useRef(false);   // true = road-scene section is on screen
-    const rafRef     = useRef<number>(0);
+    const visibleRef  = useRef(false);
+    const rafRef      = useRef<number>(0);
+    const [showBtn, setShowBtn]   = useState(false);
+    const [muted,   setMuted]     = useState(false);
 
     useEffect(() => {
         const audio   = new Audio('/honk.mp3');
@@ -16,12 +18,11 @@ export default function HonkSound() {
         audio.preload = 'auto';
         audioRef.current = audio;
 
-        // ── play / stop helpers ───────────────────────────────────────────────
         const tryPlay = () => {
             if (playingRef.current || !unlockedRef.current || !visibleRef.current) return;
             playingRef.current = true;
             audio.play().catch(() => {
-                playingRef.current = false; // browser blocked — retry next tick
+                playingRef.current = false;
             });
         };
 
@@ -32,21 +33,24 @@ export default function HonkSound() {
             audio.currentTime = 0;
         };
 
-        // ── unlock audio on first user interaction ────────────────────────────
-        // Chrome/Safari block audio until the user clicks, taps, or presses a key.
+        // Unlock on real user gesture (click / tap / key) — NOT scroll
         const unlock = () => {
             if (unlockedRef.current) return;
             unlockedRef.current = true;
-            // Try immediately in case section is already on screen
+            setShowBtn(false);
             if (visibleRef.current) tryPlay();
         };
 
         window.addEventListener('click',      unlock);
         window.addEventListener('keydown',    unlock);
         window.addEventListener('touchstart', unlock);
-        window.addEventListener('scroll',     unlock, { passive: true });
 
-        // ── IntersectionObserver — start / stop when road scene enters view ───
+        // Show the mute button after 2 s if user hasn't interacted yet
+        const btnTimer = setTimeout(() => {
+            if (!unlockedRef.current) setShowBtn(true);
+        }, 2000);
+
+        // IntersectionObserver — play when road scene enters viewport
         const roadScene = document.querySelector('.road-scene');
         let io: IntersectionObserver | null = null;
 
@@ -57,19 +61,15 @@ export default function HonkSound() {
                     if (!entries[0].isIntersecting) {
                         tryStop();
                     } else {
-                        // Section just came into view — try to start if unlocked
                         tryPlay();
                     }
                 },
-                { threshold: 0.1 } // fire as soon as 10 % is visible
+                { threshold: 0.1 }
             );
             io.observe(roadScene);
         }
 
-        // ── RAF loop — sync with "Drive It Home Today" tag opacity ────────────
-        // Uses getComputedStyle (reliable) instead of getAnimations() (fragile).
-        // The tagFloat animation fades opacity 0 → 1 → 0; when opacity > 0.5
-        // the tag is clearly visible — that's when we honk.
+        // RAF — sync honk with "Drive It Home Today" tag visibility
         const tick = () => {
             if (visibleRef.current && unlockedRef.current) {
                 const tag = document.querySelector<HTMLElement>('.drive-tag');
@@ -79,25 +79,77 @@ export default function HonkSound() {
                     else              tryStop();
                 }
             } else {
-                tryStop(); // section not on screen — always stop
+                tryStop();
             }
             rafRef.current = requestAnimationFrame(tick);
         };
 
         rafRef.current = requestAnimationFrame(tick);
 
-        // ── cleanup ───────────────────────────────────────────────────────────
         return () => {
+            clearTimeout(btnTimer);
             cancelAnimationFrame(rafRef.current);
             io?.disconnect();
             window.removeEventListener('click',      unlock);
             window.removeEventListener('keydown',    unlock);
             window.removeEventListener('touchstart', unlock);
-            window.removeEventListener('scroll',     unlock);
             tryStop();
             audio.src = '';
         };
     }, []);
 
-    return null;
+    // Button click — this IS a real user gesture, so play() will work
+    const handleBtn = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        if (muted) {
+            // Unmute
+            setMuted(false);
+            unlockedRef.current = true;
+            if (visibleRef.current && !playingRef.current) {
+                playingRef.current = true;
+                audio.play().catch(() => { playingRef.current = false; });
+            }
+        } else {
+            // Mute / unlock first time
+            unlockedRef.current = true;
+            setShowBtn(false);
+            if (visibleRef.current && !playingRef.current) {
+                playingRef.current = true;
+                audio.play().catch(() => { playingRef.current = false; });
+            }
+        }
+    };
+
+    if (!showBtn) return null;
+
+    return (
+        <button
+            onClick={handleBtn}
+            title={muted ? 'Enable horn sound' : 'Enable horn sound'}
+            style={{
+                position:       'fixed',
+                bottom:         '28px',
+                right:          '28px',
+                width:          '44px',
+                height:         '44px',
+                borderRadius:   '50%',
+                background:     'rgba(20,20,20,0.82)',
+                border:         '1px solid rgba(255,255,255,0.15)',
+                color:          '#fff',
+                fontSize:       '20px',
+                cursor:         'pointer',
+                zIndex:         9999,
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(6px)',
+                boxShadow:      '0 2px 12px rgba(0,0,0,0.4)',
+            }}
+            aria-label="Enable horn sound"
+        >
+            🔇
+        </button>
+    );
 }
