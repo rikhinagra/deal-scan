@@ -44,6 +44,7 @@ export default function HonkSound() {
         window.addEventListener('click',      unlock);
         window.addEventListener('keydown',    unlock);
         window.addEventListener('touchstart', unlock);
+        window.addEventListener('scroll',     unlock, { passive: true });
 
         // ── IntersectionObserver — start / stop when road scene enters view ───
         const roadScene = document.querySelector('.road-scene');
@@ -92,6 +93,7 @@ export default function HonkSound() {
             window.removeEventListener('click',      unlock);
             window.removeEventListener('keydown',    unlock);
             window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('scroll',     unlock);
             tryStop();
             audio.src = '';
         };
