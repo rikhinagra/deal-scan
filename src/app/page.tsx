@@ -1,6 +1,7 @@
 
 import InteractiveScene from '@/components/InteractiveScene';
 import NavScrollHandler from '@/components/NavScrollHandler';
+import HonkSound from '@/components/HonkSound';
 import { Zap, BarChart3, Lock, Car, ClipboardList, Smartphone, Handshake, User, Building2, Star, Check, Play, AlertTriangle, Flag } from 'lucide-react';
 import { FaGooglePlay, FaApple } from 'react-icons/fa';
 
@@ -8,6 +9,7 @@ export default function Home() {
   return (
     <>
       <NavScrollHandler />
+      <HonkSound />
       {/* InteractiveScene disabled — video background is used instead */}
       {/* <InteractiveScene /> */}
 
