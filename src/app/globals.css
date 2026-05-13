@@ -1443,6 +1443,11 @@ h2 span {
   z-index: 2
 }
 
+.dl-panels--single {
+  grid-template-columns: 1fr;
+  max-width: 420px;
+}
+
 .dlp {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1651,17 +1656,24 @@ footer {
   .hero-in {
     flex-direction: column;
     align-items: flex-start;
-    gap: 2rem
+    gap: 2rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .hero {
     padding-top: 5rem;
+    min-height: 100dvh;
     min-height: 100svh;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 1rem;
   }
 
   .hero-copy {
     max-width: 100%;
+    margin-top: clamp(0.75rem, 2.5vw, 1.75rem);
   }
 
   h1 {
@@ -1685,6 +1697,8 @@ footer {
   .hero-stats {
     flex-wrap: wrap;
     gap: .5rem;
+    margin-top: auto;
+    flex-shrink: 0;
   }
 
   .hero-stat {
@@ -1729,9 +1743,11 @@ footer {
 }
 
 @media(max-width:600px) {
+  /* Full first-screen hero: stats bar pinned to bottom of viewport; next section below the fold */
   .hero {
     padding-top: 4.5rem;
-    min-height: auto;
+    min-height: 100dvh;
+    min-height: 100svh;
     justify-content: flex-start;
     padding-bottom: 0;
   }
@@ -1750,6 +1766,10 @@ footer {
   .hero-in {
     gap: 1.5rem;
     padding: 1rem 0 1.5rem;
+  }
+
+  .hero-copy {
+    margin-top: clamp(1.75rem, 7vw, 3.25rem);
   }
 
   .hero-desc {

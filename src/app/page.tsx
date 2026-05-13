@@ -1,8 +1,8 @@
 
-import InteractiveScene from '@/components/InteractiveScene';
 import NavScrollHandler from '@/components/NavScrollHandler';
 import HonkSound from '@/components/HonkSound';
 import { Zap, BarChart3, Lock, Car, ClipboardList, Smartphone, Handshake, User, Building2, Star, Check, Play, AlertTriangle, Flag } from 'lucide-react';
+import { IOS_APP_AVAILABLE } from '@/lib/appAvailability';
 import { FaGooglePlay, FaApple } from 'react-icons/fa';
 
 export default function Home() {
@@ -10,12 +10,6 @@ export default function Home() {
     <>
       <NavScrollHandler />
       <HonkSound />
-      {/* InteractiveScene disabled — video background is used instead */}
-      {/* <InteractiveScene /> */}
-
-
-
-
       {/* PORSCHE-INSPIRED CAR CURSOR */}
 
 
@@ -25,7 +19,9 @@ export default function Home() {
           DEALSCAN
         </a>
         <div className="nav-r">
-          <span className="nav-tag">Smart Car Buying · Android &amp; iOS</span>
+          <span className="nav-tag">
+            {IOS_APP_AVAILABLE ? 'Smart Car Buying · Android & iOS' : 'Smart Car Buying · Google Play'}
+          </span>
           <a href="#download" className="nav-btn">Get the App</a>
         </div>
       </nav>
@@ -52,7 +48,10 @@ export default function Home() {
 
             {/* LEFT: Main Text */}
             <div className="hero-copy">
-              <div className="eyebrow rv d1"><span className="edot"></span>Car Buying Intelligence · Android &amp; iOS</div>
+              <div className="eyebrow rv d1">
+                <span className="edot"></span>
+                {IOS_APP_AVAILABLE ? 'Car Buying Intelligence · Android & iOS' : 'Car Buying Intelligence · Google Play'}
+              </div>
               <h1 className="rv d2" itemProp="name">
                 DRIVE IT<br />
                 HOME<br />
@@ -60,7 +59,7 @@ export default function Home() {
                 <span className="soft">CONFIDENT.</span>
               </h1>
               <p className="hero-desc rv d3" itemProp="description">
-                When the dealer hands you that offer sheet, DealScan <strong>reads every number instantly</strong> — breaking down financing terms, fees, and add-ons into plain English so you walk out <strong>knowing exactly what you paid for.</strong>
+                When the dealer hands you that offer sheet, DealScan <strong>reads every number instantly,</strong> breaking down financing terms, fees, and add-ons into plain English so you walk out <strong>knowing exactly what you paid for.</strong>
               </p>
               <div className="hero-label rv d4">
                 <span className="hero-label-dot"></span>
@@ -74,10 +73,12 @@ export default function Home() {
                 <div className="bstore-ic"><FaGooglePlay size={18} fill="currentColor" /></div>
                 <div className="bstore-t"><span className="bstore-s">Get it on</span><span className="bstore-m">Google Play</span></div>
               </a>
+              {IOS_APP_AVAILABLE ? (
               <a href="#download-ios" className="bstore bios" aria-label="Download DealScan on App Store">
                 <div className="bstore-ic"><FaApple size={20} fill="currentColor" /></div>
                 <div className="bstore-t"><span className="bstore-s">Download on</span><span className="bstore-m">App Store</span></div>
               </a>
+              ) : null}
             </div>
 
           </div>
@@ -153,13 +154,13 @@ export default function Home() {
               <span className="snum">Step 01</span>
               <div className="sic"><ClipboardList size={24} strokeWidth={1.8} /></div>
               <h3>Receive the Offer Sheet</h3>
-              <p>Your dealer presents their first proposal — a standard sheet with pricing, financing terms, and optional add-ons. Take your time, no pressure.</p>
+              <p>Your dealer presents their first proposal, a standard sheet with pricing, financing terms, and optional add-ons. Take your time, no pressure.</p>
             </div>
             <div className="step" role="listitem">
               <span className="snum">Step 02</span>
               <div className="sic"><Smartphone size={24} strokeWidth={1.8} /></div>
               <h3>Open DealScan &amp; Scan</h3>
-              <p>Point your phone at the document. DealScan's smart OCR reads every line item — price, APR, fees, and packages — in under 90 seconds.</p>
+              <p>Point your phone at the document. DealScan's smart OCR reads every line item: price, APR, fees, and packages, in under 90 seconds.</p>
             </div>
             <div className="step" role="listitem">
               <span className="snum">Step 03</span>
@@ -171,7 +172,7 @@ export default function Home() {
               <span className="snum">Step 04</span>
               <div className="sic"><Handshake size={24} strokeWidth={1.8} /></div>
               <h3>Have a Productive Conversation</h3>
-              <p>Engage your salesperson from a place of knowledge. Informed buyers and transparent dealers reach agreements faster — and with greater confidence on both sides.</p>
+              <p>Engage your salesperson from a place of knowledge. Informed buyers and transparent dealers reach agreements faster, with greater confidence on both sides.</p>
             </div>
           </div>
         </section>
@@ -192,10 +193,10 @@ export default function Home() {
             <div className="wcard">
               <div className="wtag"><User size={14} strokeWidth={2} /> For Car Buyers</div>
               <h3>SHOP WITH CONFIDENCE</h3>
-              <p>Whether it's your first car or your tenth, DealScan gives you the context to ask the right questions and make decisions you'll feel great about — both at signing and years later.</p>
+              <p>Whether it's your first car or your tenth, DealScan gives you the context to ask the right questions and make decisions you'll feel great about, both at signing and years later.</p>
               <ul className="wlist">
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Understand every line on your offer sheet in plain English</li>
-                <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Know what's standard and what's optional — without guessing</li>
+                <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Know what's standard and what's optional, without guessing</li>
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Ask informed questions and have a real, two-way conversation</li>
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Leave with complete confidence in every decision you made</li>
               </ul>
@@ -207,7 +208,7 @@ export default function Home() {
               <ul className="wlist">
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Informed buyers close faster with fewer objections</li>
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Transparent deals create stronger relationships and referrals</li>
-                <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Support an educated buyer base — the future of auto retail</li>
+                <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Support an educated buyer base, the future of auto retail</li>
                 <li className="wi"><div className="wck"><svg viewBox="0 0 12 12" fill="none" width="10" height="10"><path d="M2 6l3 3 5-5" stroke="#e84830" strokeWidth="1.5" /></svg></div>Position your store as a customer-first, professional operation</li>
               </ul>
             </div>
@@ -216,11 +217,13 @@ export default function Home() {
 
         {/* DOWNLOAD CTA */}
         <section className="cta" id="download">
-          <div className="cta-lbl">Free to Download · Android &amp; iOS</div>
+          <div className="cta-lbl">
+            {IOS_APP_AVAILABLE ? 'Free to Download · Android & iOS' : 'Free on Google Play · Android'}
+          </div>
           <h2>YOUR NEXT CAR DEAL,<br /><span>FULLY UNDERSTOOD.</span></h2>
           <p className="cta-sub">Download DealScan free and walk into any dealership with the clarity and context to make a decision you'll feel confident about.</p>
 
-          <div className="dl-panels">
+          <div className={`dl-panels${IOS_APP_AVAILABLE ? '' : ' dl-panels--single'}`}>
             <article className="dlp" id="download-android" itemScope itemType="https://schema.org/SoftwareApplication">
               <div className="dlplat"><FaGooglePlay size={13} fill="currentColor" /> Google Play</div>
               <div className="dlos" itemProp="name">ANDROID</div>
@@ -231,6 +234,7 @@ export default function Home() {
                 Download Free
               </a>
             </article>
+            {IOS_APP_AVAILABLE ? (
             <article className="dlp" id="download-ios" itemScope itemType="https://schema.org/SoftwareApplication">
               <div className="dlplat"><FaApple size={15} fill="currentColor" style={{ transform: 'translateY(-1px)' }} /> App Store</div>
               <div className="dlos" itemProp="name">iPHONE</div>
@@ -241,6 +245,7 @@ export default function Home() {
                 Download Free
               </a>
             </article>
+            ) : null}
           </div>
         </section>
 
@@ -250,7 +255,7 @@ export default function Home() {
           <h2>COMMON <span>QUESTIONS</span></h2>
           <div className="fqi" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
             <div className="fqq" itemProp="name">How does DealScan work at the dealership?</div>
-            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">When your dealer presents their offer sheet, open DealScan and point your phone's camera at the document. The app reads every number using smart OCR — price, financing terms, fees, and optional add-ons — and displays a plain-language breakdown in under 90 seconds.</span></div>
+            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">When your dealer presents their offer sheet, open DealScan and point your phone's camera at the document. The app reads every number using smart OCR: price, financing terms, fees, and optional add-ons, and displays a plain-language breakdown in under 90 seconds.</span></div>
           </div>
           <div className="fqi" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
             <div className="fqq" itemProp="name">Is DealScan designed to work against dealerships?</div>
@@ -258,11 +263,11 @@ export default function Home() {
           </div>
           <div className="fqi" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
             <div className="fqq" itemProp="name">Is DealScan free to download?</div>
-            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">Yes, DealScan is free to download on both Google Play (Android) and the App Store (iPhone and iPad). Core offer sheet scanning and plain-language breakdown features are included at no cost.</span></div>
+            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">{IOS_APP_AVAILABLE ? 'Yes, DealScan is free to download on both Google Play (Android) and the App Store (iPhone and iPad). Core offer sheet scanning and plain-language breakdown features are included at no cost.' : 'Yes, DealScan is free to download on Google Play for Android. Core offer sheet scanning and plain-language breakdown features are included at no cost.'}</span></div>
           </div>
           <div className="fqi" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
             <div className="fqq" itemProp="name">Which car brands and dealerships does DealScan support?</div>
-            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">DealScan supports standard offer sheet formats used at all major US dealerships — Toyota, Honda, Ford, GM, BMW, Mercedes-Benz, and independent lots. If a dealer uses a standard pricing sheet, DealScan can read it.</span></div>
+            <div className="fqa" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"><span itemProp="text">DealScan supports standard offer sheet formats used at all major US dealerships: Toyota, Honda, Ford, GM, BMW, Mercedes-Benz, and independent lots. If a dealer uses a standard pricing sheet, DealScan can read it.</span></div>
           </div>
         </section>
 
